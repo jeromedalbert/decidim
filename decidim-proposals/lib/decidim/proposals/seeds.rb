@@ -17,31 +17,12 @@ module Decidim
 
         Decidim::Proposals.create_default_states!(component, admin_user)
 
-        5.times do |n|
-          proposal = create_proposal!(component:)
-
-          if proposal.state.nil? && component.settings.amendments_enabled?
-            emendation = create_emendation!(proposal:)
-            create_proposal_votes!(proposal: emendation)
-          end
-
-          (n % 3).times do |_m|
-            create_proposal_votes!(proposal:)
-          end
-
-          (n % 3).times do
-            create_proposal_notes!(proposal:)
-          end
-
-          Decidim::Comments::Seed.comments_for(proposal)
-
-          create_collaborative_draft!(component:)
+        5.times do
+          Decidim::SeedJob.perform_later(self.class.name, :create_proposal!, { participatory_space: }, { component: })
+          Decidim::SeedJob.perform_later(self.class.name, :create_collaborative_draft!, { participatory_space: }, { component: })
         end
 
-        update_traceability!(component:)
-
-        create_report!(reportable: Decidim::Proposals::Proposal.take, current_user: Decidim::User.take)
-        hide_report!(reportable: Decidim::Proposals::Proposal.take)
+        Decidim::SeedJob.perform_later(self.class.name, :update_traceability!, { participatory_space: }, { component: })
       end
 
       def organization
@@ -123,10 +104,28 @@ module Decidim
             followers: proposal.participatory_space.followers
           )
 
+          create_report!(reportable: proposal, current_user: Decidim::User.take ) if proposal.id % 7
+          hide_report!(reportable: proposal ) if proposal.id % 8
+
           proposal
         end
 
         create_attachment(attached_to: proposal, filename: "city.jpeg") if component.settings.attachments_allowed?
+
+        if proposal.state.nil? && component.settings.amendments_enabled?
+          emendation = create_emendation!(proposal:)
+          create_proposal_votes!(proposal: emendation)
+        end
+
+        (proposal.id % 3).times do
+          create_proposal_votes!(proposal:)
+        end
+
+        (proposal.id % 3).times do
+          create_proposal_notes!(proposal:)
+        end
+
+        Decidim::SeedJob.perform_later(self.class.name, :comments_for, { participatory_space: }, { resource: proposal })
 
         proposal
       end

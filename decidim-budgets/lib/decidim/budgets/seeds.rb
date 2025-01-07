@@ -21,11 +21,7 @@ module Decidim
 
         Decidim::Budgets::Budget.where(component:).each do |budget|
           rand(2...4).times do
-            project = create_project!(budget:)
-
-            create_attachments!(attached_to: project)
-
-            Decidim::Comments::Seed.comments_for(project)
+            Decidim::SeedJob.perform_later(self.class.name, :create_project!, { participatory_space: }, { budget: })
           end
         end
       end
@@ -97,13 +93,19 @@ module Decidim
           )
         end
 
-        Decidim.traceability.perform_action!(
+        project = Decidim.traceability.perform_action!(
           "create",
           Decidim::Budgets::Project,
           admin_user
         ) do
           Decidim::Budgets::Project.create!(params)
         end
+
+        create_attachments!(attached_to: project)
+
+        Decidim::SeedJob.perform_later(self.class.name, :comments_for, { participatory_space: }, { resource: project })
+
+        project
       end
     end
   end

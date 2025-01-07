@@ -6,6 +6,7 @@ require "decidim/proposals/engine"
 require "decidim/proposals/admin_engine"
 require "decidim/proposals/import"
 require "decidim/proposals/component"
+require "decidim/proposals/seeds"
 
 module Decidim
   # This namespace holds the logic of the `Proposals` component. This component

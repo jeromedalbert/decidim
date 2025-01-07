@@ -5,6 +5,7 @@ require "decidim/accountability/api"
 require "decidim/accountability/engine"
 require "decidim/accountability/admin_engine"
 require "decidim/accountability/component"
+require "decidim/accountability/seeds"
 
 module Decidim
   # Base module for this engine.

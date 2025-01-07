@@ -68,8 +68,6 @@ Decidim.register_component(:accountability) do |component|
   end
 
   component.seeds do |participatory_space|
-    require "decidim/accountability/seeds"
-
     Decidim::Accountability::Seeds.new(participatory_space:).call
   end
 end

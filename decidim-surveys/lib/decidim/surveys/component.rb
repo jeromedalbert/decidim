@@ -84,8 +84,6 @@ Decidim.register_component(:surveys) do |component|
   end
 
   component.seeds do |participatory_space|
-    require "decidim/surveys/seeds"
-
     Decidim::Surveys::Seeds.new(participatory_space:).call
   end
 end

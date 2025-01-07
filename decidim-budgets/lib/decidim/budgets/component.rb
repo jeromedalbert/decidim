@@ -110,8 +110,6 @@ Decidim.register_component(:budgets) do |component|
   end
 
   component.seeds do |participatory_space|
-    require "decidim/budgets/seeds"
-
     Decidim::Budgets::Seeds.new(participatory_space:).call
   end
 end

@@ -161,5 +161,9 @@ module Decidim
     def create_follow!(user, followable)
       Decidim::Follow.create!(followable:, user:)
     end
+
+    def comments_for(resource)
+      Decidim::Comments::Seed.comments_for(resource)
+    end
   end
 end

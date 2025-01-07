@@ -104,8 +104,6 @@ Decidim.register_component(:meetings) do |component|
   end
 
   component.seeds do |participatory_space|
-    require "decidim/meetings/seeds"
-
     Decidim::Meetings::Seeds.new(participatory_space:).call
   end
 end

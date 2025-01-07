@@ -199,8 +199,6 @@ Decidim.register_component(:proposals) do |component|
   end
 
   component.seeds do |participatory_space|
-    require "decidim/proposals/seeds"
-
     Decidim::Proposals::Seeds.new(participatory_space:).call
   end
 end

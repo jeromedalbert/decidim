@@ -18,7 +18,9 @@ module Decidim
 
         create_questions!(questionnaire:)
 
-        rand(20).times { create_answers!(questionnaire:) }
+        rand(20).times do
+          Decidim::SeedJob.perform_later(self.class.name, :create_answers!, { participatory_space: }, { questionnaire: })
+        end
       end
 
       def create_component!

@@ -16,26 +16,14 @@ module Decidim
         component = create_component!
 
         2.times do
-          create_meeting!(component:, type: :online)
-          create_meeting!(component:, type: :online_live_event)
-          create_meeting!(component:, type: :hybrid)
-          meeting = create_meeting!(component:, type: :in_person)
+          Decidim::SeedJob.perform_later(self.class.name, :create_meeting!, { participatory_space: }, { component:, type: :online })
+          Decidim::SeedJob.perform_later(self.class.name, :create_meeting!, { participatory_space: }, { component:, type: :online_live_event })
+          Decidim::SeedJob.perform_later(self.class.name, :create_meeting!, { participatory_space: }, { component:, type: :hybrid })
+          Decidim::SeedJob.perform_later(self.class.name, :create_meeting!, { participatory_space: }, {component:, type: :in_person, create_extras: true })
 
-          2.times do
-            create_service!(meeting:)
-          end
-
-          create_questionnaire_for!(meeting:)
-
-          2.times do |_n|
-            create_meeting_registration!(meeting:)
-          end
-
-          create_attachments!(attached_to: meeting)
         end
-
-        create_meeting!(component:, type: [:in_person, :online, :hybrid].sample, author_type: :user)
-        create_meeting!(component:, type: [:in_person, :online, :hybrid].sample, author_type: :user_group)
+        Decidim::SeedJob.perform_later(self.class.name, :create_meeting!, { participatory_space: }, { component:, type: [:in_person, :online, :hybrid].sample, author_type: :user })
+        Decidim::SeedJob.perform_later(self.class.name, :create_meeting!, { participatory_space: }, { component:, type: [:in_person, :online, :hybrid].sample, author_type: :user_group })
       end
 
       def create_component!
@@ -154,7 +142,7 @@ module Decidim
       # @param author_type [:official, :user, :user_group] Which type the author of the meeting will be
       #
       # @return [Decidim::Meeting]
-      def create_meeting!(component:, type: :in_person, author_type: :official)
+      def create_meeting!(component:, type: :in_person, author_type: :official, create_extras: false)
         params = meeting_params(component:, type:, author_type:)
 
         resource = Decidim.traceability.create!(
@@ -175,7 +163,19 @@ module Decidim
           resource.publish!
         end
 
-        Decidim::Comments::Seed.comments_for(resource)
+        Decidim::SeedJob.perform_later(self.class.name, :comments_for, { participatory_space: }, { resource: })
+
+        2.times do
+          create_service!(meeting: resource)
+        end
+
+        create_questionnaire_for!(meeting: resource)
+
+        2.times do
+          create_meeting_registration!(meeting: resource)
+        end
+
+        create_attachments!(attached_to: resource)
 
         resource
       end

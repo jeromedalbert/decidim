@@ -8,6 +8,7 @@ require "decidim/meetings/directory"
 require "decidim/meetings/directory_engine"
 require "decidim/meetings/component"
 require "decidim/meetings/polls"
+require "decidim/meetings/seeds"
 
 module Decidim
   # Base module for this engine.

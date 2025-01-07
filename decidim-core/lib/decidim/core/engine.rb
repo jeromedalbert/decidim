@@ -45,6 +45,7 @@ require "decidim/middleware/strip_x_forwarded_host"
 require "decidim/middleware/static_dispatcher"
 require "decidim/middleware/current_organization"
 require "decidim/webpacker"
+require "decidim/core/seeds"
 
 module Decidim
   module Core

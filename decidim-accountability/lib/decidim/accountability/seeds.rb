@@ -20,7 +20,7 @@ module Decidim
           categories = create_categories!
 
           categories.each do |category|
-            create_result!(component:, category:)
+            Decidim::SeedJob.perform_later(self.class.name, :create_result!, { participatory_space: }, { component:, category: })
           end
         end
       end
@@ -90,7 +90,7 @@ module Decidim
           visibility: "all"
         )
 
-        Decidim::Comments::Seed.comments_for(result)
+        Decidim::SeedJob.perform_later(self.class.name, :comments_for, { participatory_space: }, { resource: result })
 
         3.times do
           child_result = Decidim.traceability.create!(
@@ -119,7 +119,7 @@ module Decidim
             )
           end
 
-          Decidim::Comments::Seed.comments_for(child_result)
+          Decidim::SeedJob.perform_later(self.class.name, :comments_for, { participatory_space: }, { resource: child_result })
         end
       end
     end

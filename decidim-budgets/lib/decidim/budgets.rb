@@ -6,6 +6,7 @@ require "decidim/budgets/api"
 require "decidim/budgets/engine"
 require "decidim/budgets/admin_engine"
 require "decidim/budgets/component"
+require "decidim/budgets/seeds"
 
 module Decidim
   # Base module for this engine.
