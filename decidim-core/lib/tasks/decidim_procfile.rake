@@ -17,7 +17,8 @@ namespace :decidim do
         RUBY
       end
 
-      actions :create_file, "bin/dev", %(#!/usr/bin/env sh
+      actions :create_file, "bin/dev", force: true do
+        %(#!/usr/bin/env sh
 
 set -e
 
@@ -31,6 +32,7 @@ if ! gem list foreman -i --silent; then
 fi
 
 exec foreman start -f Procfile.dev "$@")
+      end
 
       actions :chmod, "bin/dev", 0o755
     end
