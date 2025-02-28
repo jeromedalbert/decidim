@@ -30,6 +30,7 @@ module Decidim
 
       def proposal_state_css_style(proposal)
         return "" if proposal.emendation?
+        return "" if proposal.withdrawn?
 
         proposal.proposal_state&.css_style
       end
@@ -145,11 +146,15 @@ module Decidim
       end
 
       def layout_item_classes
-        "layout-item lg:pt-4"
+        if show_voting_rules?
+          "layout-item lg:pt-4"
+        else
+          "layout-item"
+        end
       end
 
       def show_voting_rules?
-        return false if !votes_enabled? || current_settings.votes_blocked?
+        return false if !votes_enabled? || votes_blocked?
 
         return true if vote_limit_enabled?
         return true if threshold_per_proposal_enabled?
