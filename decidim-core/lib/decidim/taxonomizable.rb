@@ -51,7 +51,7 @@ module Decidim
           Arel::Nodes::Intersect.new(memo, query)
         end
 
-        @klass.from(Arel::Nodes::As.new(subquery, Arel.sql(@klass.arel_table.name)))
+        klass.from(Arel::Nodes::As.new(subquery, Arel.sql(klass.arel_table.name)))
       }
 
       private
